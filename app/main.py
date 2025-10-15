@@ -1,14 +1,13 @@
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from app.routes import home, about, contact
 
 app = FastAPI()
-templates = Jinja2Templates(directory="app/templates")
 
-@app.get("/", response_class=HTMLResponse)
-def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Hola FastAPI"})
+# Static (CSS/JS/imagenes)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-@app.post("/saludo", response_class=HTMLResponse)
-def saludo(request: Request, nombre: str = Form(...)):
-    return templates.TemplateResponse("index.html", {"request": request, "title": f"Hola {nombre}!"})
+# Routers (páginas)
+app.include_router(home.router)
+app.include_router(about.router)
+app.include_router(contact.router)
